@@ -1,0 +1,3 @@
+class FollowerMaze
+
+end
