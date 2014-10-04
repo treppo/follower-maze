@@ -1,12 +1,13 @@
-require 'thread'
 require_relative 'follower_maze/message_dispatch'
+require_relative 'follower_maze/message'
 require_relative 'follower_maze/event_source'
 require_relative 'follower_maze/client'
+require_relative 'follower_maze/clients'
 
 module FollowerMaze
   class Main
     def initialize
-      @clients = {}
+      @clients = Clients.new
       @event_source = EventSource.new
       @threads = []
     end
@@ -33,7 +34,10 @@ module FollowerMaze
     end
 
     def dispatch_messages
-      MessageDispatch.new(source: @event_source, recipients: @clients).start
+      MessageDispatch.new(source: @event_source,
+        message_class: Message,
+        recipients: @clients).start
     end
+
   end
 end

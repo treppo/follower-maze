@@ -15,7 +15,7 @@ class Client
 
   def connect
     @socket = @server.accept
-    @id = @socket.gets
+    @id = @socket.gets.to_i
   end
 
   def send(message)

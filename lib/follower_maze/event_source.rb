@@ -10,6 +10,6 @@ class EventSource
   end
 
   def next
-    @socket.gets('\r\n')
+    @socket.gets("\r\n")
   end
 end

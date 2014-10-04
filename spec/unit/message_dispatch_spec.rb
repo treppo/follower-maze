@@ -4,27 +4,49 @@ require 'message_dispatch'
 module FollowerMaze
   describe MessageDispatch do
     before do
-      @source = Class.new do
-        def next
-          return nil if @done
-          @done = true
-          return 'broadcast message'
-        end
-      end.new
-      @recipient1 = Minitest::Mock.new
-      @recipient2 = Minitest::Mock.new
-      recipients = { :'1' => @recipient1, :'2' => @recipient2 }
-      @sut = MessageDispatch.new(source: @source, recipients: recipients)
+      @message_class = Minitest::Mock.new
+      @message = Minitest::Mock.new
+      @recipients = Class.new
     end
 
     it 'sends broadcasts to all recipients' do
-      @recipient1.expect :send, nil, ['broadcast message']
-      @recipient2.expect :send, nil, ['broadcast message']
+      @sut = MessageDispatch.new(source: create_source('bm'),
+                                 recipients: @recipients,
+                                 message_class: @message_class)
+      @message_class.expect :new, @message, ['bm']
+      @message.expect :send_to, nil, [@recipients]
 
       @sut.start
 
-      @recipient1.verify
-      @recipient2.verify
+      @message_class.verify
+      @message.verify
+    end
+
+    it 'sends private messages to the right recipients' do
+      @sut = MessageDispatch.new(source: create_source('pm'),
+                                 recipients: @recipients,
+                                 message_class: @message_class)
+      @message_class.expect :new, @message, ['pm']
+      @message.expect :send_to, nil, [@recipients]
+
+      @sut.start
+
+      @message_class.verify
+      @message.verify
+    end
+
+    def create_source(message)
+      Class.new do
+        def initialize(message)
+          @message = message
+        end
+
+        def next
+          return nil if @done
+          @done = true
+          return @message
+        end
+      end.new(message)
     end
   end
 end

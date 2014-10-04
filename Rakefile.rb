@@ -1,9 +1,9 @@
 require 'rake/testtask'
 
-Rake::TestTask.new(:e2e) do |t|
+Rake::TestTask.new(:feature) do |t|
   t.libs = ['lib', 'spec']
   t.options = '-v'
-  t.test_files = FileList['spec/end-to-end/*_spec.rb']
+  t.test_files = FileList['spec/feature/*_spec.rb']
 end
 
 Rake::TestTask.new(:unit) do |t|
@@ -12,4 +12,4 @@ Rake::TestTask.new(:unit) do |t|
   t.test_files = FileList['spec/unit/*_spec.rb']
 end
 
-task default: [:unit, :e2e]
+task default: [:unit, :feature]
